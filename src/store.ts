@@ -13,15 +13,23 @@ export interface Item {
   layerId: string;
 }
 
+export interface ItemWithGroupPath {
+  id?: string;
+  name: string;
+  groupPath: string;
+}
+
 export class MyStore extends Dexie {
   layers!: Table<Layer>;
   items!: Table<Item>;
+  itemsWithGroupPath!: Table<ItemWithGroupPath>;
 
   constructor() {
     super('myDatabase');
-    this.version(1).stores({
+    this.version(2).stores({
       layers: '&id, name, groupPath',
       items: '&id, name, layerId',
+      itemsWithGroupPath: '&id, name, groupPath',
     });
   }
 }

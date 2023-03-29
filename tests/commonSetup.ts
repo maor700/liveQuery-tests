@@ -5,15 +5,17 @@ import { v4 } from 'uuid';
 
 export const GROUP_PATH_A = 'level_A/';
 export const GROUP_PATH_B = 'level_B/';
+const LAYER_A_ID = 'layer_A';
+const LAYER_B_ID = 'layer_B';
 
 export const LAYER_A: Layer = {
-  id: 'layer_A',
+  id: LAYER_A_ID,
   name: 'Layer A',
   groupPath: GROUP_PATH_A,
 };
 
 export const LAYER_B: Layer = {
-  id: 'layer_B',
+  id: LAYER_B_ID,
   name: 'Layer B',
   groupPath: GROUP_PATH_B,
 };
@@ -21,13 +23,13 @@ export const LAYER_B: Layer = {
 export const ITEM_A: Item = {
   id: v4(),
   name: 'item_1',
-  layerId: 'layer_A',
+  layerId: LAYER_A_ID,
 };
 
 export const ITEM_B: Item = {
   id: v4(),
   name: 'item_2',
-  layerId: 'layer_B',
+  layerId: LAYER_B_ID,
 };
 
 export const mockCallbackObj = {
@@ -39,7 +41,7 @@ export const mockCallbackObj = {
   },
 };
 
-export const sleep = (duration = 100) =>
+export const sleep = (duration = 200) =>
   new Promise((resolve) => {
     setTimeout(resolve, duration);
   });
@@ -47,38 +49,6 @@ export const sleep = (duration = 100) =>
 export async function getItemsByGroupPath(groupPath: string): Promise<Item[]> {
   const layersIds = await store.layers.where('groupPath').startsWith(groupPath).primaryKeys();
   return store.items.where('layerId').anyOf(layersIds).toArray();
-}
-
-type populateDBOptions = {
-  layersA: number;
-  layersB: number;
-  itemsA: number;
-  itemsB: number;
-};
-const DEFAULT_POPULATE_OPTIONS: populateDBOptions = {
-  layersA: 2,
-  layersB: 2,
-  itemsA: 2,
-  itemsB: 2,
-};
-
-export function populateDB(options: populateDBOptions = DEFAULT_POPULATE_OPTIONS) {
-  const { layersA, layersB, itemsA, itemsB } = options;
-
-  store.layers.bulkPut(createMulti(LAYER_A, layersA), createMulti(LAYER_B, layersB));
-  store.items.bulkPut(createMulti(ITEM_A, itemsA), createMulti(ITEM_B, itemsB));
-}
-
-function createUniqe(i: number, base: any): any {
-  return { ...base, id: `${base.id}${i}${i}${i}` };
-}
-
-function createMulti<T>(base: Partial<T>, count: number): any[] {
-  const result = [];
-  for (let i = 0; i < count; i++) {
-    result.push(createUniqe(i, base));
-  }
-  return result;
 }
 
 export const createItemsByGroupPath = (groupPath: string) => {
