@@ -1,24 +1,21 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { store } from '../../store';
 
-import Hello from '@components/Hello';
-import World from '@components/World';
-
-import style from './App.scss';
-
-export const App = (): JSX.Element => (
-  <div className={style.componentWrapper}>
-    <h2>Hello App</h2>
-    <BrowserRouter>
-      <nav className={style.routingWrapper}>
-        <b>Routing: </b>
-        <Link to="/">Hello component</Link>
-        <Link to="/world">World component</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-        <Route path="/world" element={<World />} />
-      </Routes>
-    </BrowserRouter>
-  </div>
-);
+export const App = (): JSX.Element => {
+  const items = useLiveQuery(() => store.items.toArray(), [], []);
+  return (
+    <div className="app-con">
+      <h2>My Store - dexie.js liveQuery tests</h2>
+      <div className="items-con">
+        <div className="group-path-1">
+          <h3>items</h3>
+          {items?.map((item) => (
+            <div key={item.id}>{item.name}</div>
+          ))}
+        </div>
+        <div className="group-path-2"></div>
+      </div>
+    </div>
+  );
+};
